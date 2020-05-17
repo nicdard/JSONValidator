@@ -41,7 +41,7 @@ const isHex = char =>
     || (char >= 'A' && char <= 'F')
     || (char >= 'a' && char <= 'f');
 
-const unrecognisedError = (char, state, index) => { throw new Error(`Unexpected char  ${char} at ${index} in ${state}`)};
+const unrecognisedError = (char, state, index) => { throw new Error(`Unexpected char ${char} at ${index} in ${state}`)};
 
 const transition = ({state, tokens, current}, char, index) => {
     switch (state) {
@@ -258,6 +258,8 @@ const transition = ({state, tokens, current}, char, index) => {
             } else if (isCharacter(char, '\\')) {
                 state = 'stringEscape';
                 current += char;
+            } else if (isWhiteSpace(char) && !isCharacter(char, '\u0020')) {
+                throw new Error("Invalid whitespace in string");
             } else {
                 current += char;
             }
@@ -300,7 +302,7 @@ const transition = ({state, tokens, current}, char, index) => {
         case "unicode4":
             if (isHex(char)) {
                 current += char;
-                state = 'all';
+                state = 'string';
             } else {
                 unrecognisedError(char, state, index);
             }
@@ -426,7 +428,17 @@ const parse = tokens => {
         }
     };
 
-    const ast = parseExpr();
+    const parseJson = () => {
+        if (peek() === 'object_opening') {
+            return parseObject();
+        } else if (peek() === 'array_opening') {
+            return parseArray();
+        } else {
+            throw new Error("A JSON text should be an array or an object");
+        }
+    };
+
+    const ast = parseJson();
     if (tokens.length !== c) {
         throw new Error("Unexpected tokens at the end of the text.");
     } else return ast;
@@ -463,11 +475,10 @@ const validateJSON = (json) => {
     try {
         parse(lex(json));
         isValid = true;
-    } catch (error) {
-        console.error(error.message)
-    }
+    } catch (error) {}
     return isValid;
 };
 
-console.log(transpileToJS(parse(lex('["12", 1, false, true, [12, {"a": 12}]]'))));
-
+module.exports = {
+    validateJSON
+};

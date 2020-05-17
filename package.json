@@ -1,0 +1,22 @@
+{
+  "name": "jsonvalidator",
+  "version": "0.0.1",
+  "description": "A simple JSON tokenizer, parser and transpiler",
+  "main": "src/JSONValidator.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicdard/JSONValidator.git"
+  },
+  "author": "Nicola Dardanis",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/nicdard/JSONValidator/issues"
+  },
+  "homepage": "https://github.com/nicdard/JSONValidator#readme",
+  "devDependencies": {
+    "jest": "^26.0.1"
+  }
+}
